@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Idle Gold Miner</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="game-container">
+        <h1>Idle Gold Miner</h1>
+
+        <!-- Imagen del minero trabajando -->
+        <div class="miner-image">
+            <img src="https://via.placeholder.com/200x200?text=Minero" alt="Minero trabajando" id="miner">
+        </div>
+
+        <div class="status">
+            <p>Oro: <span id="gold">0</span></p>
+            <p>Oro por segundo: <span id="gold-per-second">1</span></p>
+        </div>
+
+        <!-- Comprar pisos -->
+        <div class="actions">
+            <button id="upgrade-tool" onclick="upgradeTool()" disabled>Mejorar herramienta (Costo: 50 Oro)</button>
+            <br>
+            <p>Pisos comprados: <span id="floors-bought">0</span></p>
+            <button id="buy-floor" onclick="buyFloor()" disabled>Comprar piso (Costo: 100 Oro)</button>
+        </div>
+
+        <!-- Mostrar los pisos adquiridos -->
+        <div class="floors-container" id="floors-container">
+            <!-- Aquí aparecerán los pisos con mineros -->
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>
