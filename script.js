@@ -1,85 +1,66 @@
-let gold = 0;
-let goldPerSecond = 1;
-let miningInterval;
-let toolLevel = 0;
-let floorCost = 100;
-let floorsBought = 0;
-let miners = []; // Lista de mineros
+let gold = 0; // Current gold
+let goldPerSecond = 0; // Passive income per second
+let minerCost = 10; // Cost of the first upgrade
+let superMinerCost = 50; // Cost of the second upgrade
 
-// Elementos del DOM
-const goldElement = document.getElementById('gold');
-const goldPerSecondElement = document.getElementById('gold-per-second');
-const upgradeButton = document.getElementById('upgrade-tool');
-const buyFloorButton = document.getElementById('buy-floor');
-const floorsContainer = document.getElementById('floors-container');
-const floorsBoughtElement = document.getElementById('floors-bought');
+const goldDisplay = document.getElementById("gold-display");
+const mineGoldButton = document.getElementById("mine-gold");
+const buyMinerButton = document.getElementById("buy-miner");
+const buySuperMinerButton = document.getElementById("buy-super-miner");
+const minersContainer = document.getElementById("miners-container");
 
-// Inicia automáticamente la minería
-miningInterval = setInterval(() => {
-    gold += goldPerSecond;
-    updateDisplay();
-}, 1000); // Minar oro cada segundo
-
-// Función para actualizar la pantalla
+// Function to update the display
 function updateDisplay() {
-    goldElement.textContent = gold;
-    goldPerSecondElement.textContent = goldPerSecond;
-    floorsBoughtElement.textContent = floorsBought;
-
-    // Habilitar/deshabilitar el botón de mejorar herramienta
-    upgradeButton.disabled = gold < 50;
-
-    // Habilitar/deshabilitar el botón de comprar pisos
-    buyFloorButton.disabled = gold < floorCost;
+  goldDisplay.textContent = `Gold: ${gold}`;
+  buyMinerButton.disabled = gold < minerCost;
+  buySuperMinerButton.disabled = gold < superMinerCost;
 }
 
-// Función para mejorar la herramienta de minería
-function upgradeTool() {
-    if (gold >= 50) {
-        gold -= 50;
-        toolLevel++;
-        goldPerSecond += 2; // Aumenta la cantidad de oro por segundo
-        updateDisplay();
-    }
+// Function to add a miner
+function addMiner(type) {
+  const miner = document.createElement("div");
+  miner.classList.add("miner");
+  if (type === "super") {
+    miner.style.backgroundColor = "#ff4500"; // Super miners are red-orange
+  }
+  minersContainer.appendChild(miner);
 }
 
-// Función para comprar un piso
-function buyFloor() {
-    if (gold >= floorCost) {
-        gold -= floorCost;
-        floorsBought++;
-        
-        // Generar un minero con aumento progresivo de oro por segundo
-        let newMinerGoldPerSecond = getMinerGoldPerSecond();
-        miners.push(newMinerGoldPerSecond);
-        goldPerSecond += newMinerGoldPerSecond;
+// Manual gold mining
+mineGoldButton.addEventListener("click", () => {
+  gold += 1;
+  updateDisplay();
+});
 
-        updateDisplay();
-        
-        // Añadir un nuevo piso con minero
-        const floorDiv = document.createElement('div');
-        floorDiv.classList.add('floor');
-        
-        const minerImage = document.createElement('img');
-        minerImage.src = "https://via.placeholder.com/50x50?text=Miner";
-        minerImage.alt = "Minero";
-        
-        const floorText = document.createElement('p');
-        floorText.textContent = `Piso ${floorsBought}: Minero generando ${newMinerGoldPerSecond} oro por segundo`;
+// Buy Miner Upgrade
+buyMinerButton.addEventListener("click", () => {
+  if (gold >= minerCost) {
+    gold -= minerCost;
+    goldPerSecond += 1;
+    minerCost = Math.floor(minerCost * 1.5); // Increase cost for next purchase
+    buyMinerButton.textContent = `Buy Miner (+1 gold/sec) - Cost: ${minerCost} gold`;
+    addMiner("normal"); // Add a miner
+    updateDisplay();
+  }
+});
 
-        floorDiv.appendChild(minerImage);
-        floorDiv.appendChild(floorText);
-        
-        floorsContainer.appendChild(floorDiv);
-    }
-}
+// Buy Super Miner Upgrade
+buySuperMinerButton.addEventListener("click", () => {
+  if (gold >= superMinerCost) {
+    gold -= superMinerCost;
+    goldPerSecond += 5;
+    superMinerCost = Math.floor(superMinerCost * 1.5); // Increase cost for next purchase
+    buySuperMinerButton.textContent = `Buy Super Miner (+5 gold/sec) - Cost: ${superMinerCost} gold`;
+    addMiner("super"); // Add a super miner
+    updateDisplay();
+  }
+});
 
-// Función para obtener la cantidad de oro por segundo de un nuevo minero
-function getMinerGoldPerSecond() {
-    if (miners.length === 0) return 1;  // El primer minero genera 1 oro por segundo
-    let lastMinerGoldPerSecond = miners[miners.length - 1];
-    return lastMinerGoldPerSecond + (miners.length * 3);  // Aumenta la cantidad por 3 con cada minero
-}
+// Passive income logic
+setInterval(() => {
+  gold += goldPerSecond;
+  updateDisplay();
+}, 1000);
 
-// Inicializa la pantalla
+// Initial update
 updateDisplay();
